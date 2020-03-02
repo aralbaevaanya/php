@@ -3,6 +3,7 @@ require_once 'db.php';
 
 $title = trim(($_POST['title']));
 $myHotelName = trim($_POST['myHotel']);
+$hotels = $_POST['hotel'];
 
 $sql = 'SELECT EXISTS (SELECT id FROM templates WHERE user_id = :user_id AND name = :title)';
 $params = [':user_id' => $_SESSION['user_id'], ':title' => $title];
@@ -22,8 +23,8 @@ if ($stmt->fetchColumn()) {
     $hotel = $stmt_check->fetch(PDO::FETCH_OBJ);
 
     if (empty($hotel)) {
-        die( "Отель с именем $myHotelName не найден, вы можете создать его во вкладке \"Добавить отель\" </a>");
-    }else{
+        die("Отель с именем $myHotelName не найден, вы можете создать его во вкладке \"Добавить отель\" </a>");
+    } else {
         $myHotelHost = $hotel->host;
     }
 
@@ -40,34 +41,34 @@ if ($stmt->fetchColumn()) {
     $temlate_id = $stmt_find_id->fetch(PDO::FETCH_OBJ);
     $temlate_id = $temlate_id->id;
 
-    if (isset($_POST['hotel'])) {
-        foreach ($_POST['hotel'] as $key => $name) {
-            $name = trim($name);
-            if (!empty($name)) {
-                $sql_check = 'SELECT id FROM hotels WHERE
-                            name = :name';
-                $stmt_check = $pdo->prepare($sql_check);
-                $stmt_check->execute([':name' => $name]);
-                $hotel = $stmt_check->fetch(PDO::FETCH_OBJ);
 
-                if (empty($hotel)) {
-                    die( "Отель с именем $name не найден, вы можете создать его во вкладке \"Добавить отель\" </a>");
-                } else {
-                    $hotel_id = $hotel->id;
-                    $sql_add = 'INSERT INTO templates_hotels(template_id, hotel_id) VALUES (:template_id, :hotel_id)';
-                    $params_add = [':template_id' => $temlate_id, ':hotel_id' => $hotel_id];
-                    $stmt_add = $pdo->prepare($sql_add);
-                    $stmt_add->execute($params_add);
-                }
+    foreach ($hotels as $key => $name) {
+        $name = trim($name);
+        if (!empty($name)) {
+            $sql_check = 'SELECT id FROM hotels WHERE
+                            name = :name';
+            $stmt_check = $pdo->prepare($sql_check);
+            $stmt_check->execute([':name' => $name]);
+            $hotel = $stmt_check->fetch(PDO::FETCH_OBJ);
+
+            if (empty($hotel)) {
+                die("Отель с именем $name не найден, вы можете создать его во вкладке \"Добавить отель\" </a>");
+            } else {
+                $hotel_id = $hotel->id;
+                $sql_add = 'INSERT INTO templates_hotels(template_id, hotel_id) VALUES (:template_id, :hotel_id)';
+                $params_add = [':template_id' => $temlate_id, ':hotel_id' => $hotel_id];
+                $stmt_add = $pdo->prepare($sql_add);
+                $stmt_add->execute($params_add);
             }
         }
-        echo 'Шаблон успешно создан';
     }
+    echo 'Шаблон успешно создан';
     }
+
     ?>
     <a href="../index.php">Вернуться на главную </a>
     <br>
-     <a href="../templates.php">Создать еше шаблон</a>
+    <a href="../templates.php">Создать еше шаблон</a>
 
 </session>
 

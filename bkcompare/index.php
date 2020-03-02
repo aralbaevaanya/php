@@ -14,7 +14,9 @@
         <?php include_once 'logic/print_last_tmp.php'; ?>
     </session>
 
-    <form action="logic/createComp.php" name="creteComp" method="post">
+    <div id='response'></div>
+
+    <form action="logic/createComp.php" method="post">
         <label>Дата</label>
         <input type="date" name='date' value=time() required/>
         <br>
@@ -26,7 +28,6 @@
                 name="button">Поличить статистику</button>
 
     </form>
-
 
     <a href="logic/logout.php">Выход из аккаунта</a>
     <br>
