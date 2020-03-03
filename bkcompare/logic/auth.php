@@ -1,5 +1,6 @@
 <?php
 require_once 'db.php';
+require_once '../parts/head.php';
 
 $login =trim($_POST['login']);
 $pwd = trim($_POST['pwd']);
@@ -13,10 +14,11 @@ if(!empty($login) && !empty($pwd)){
 
     $user = $stmt->fetch(PDO::FETCH_OBJ);
     if($user){
-        if(password_verify($pwd, $user->password)){
+        if(password_verify($pwd, $user->password)) {
             $_SESSION['user_login'] = $user->login;
             $_SESSION['user_id'] = $user->id;
-            header('Location: ../index.php');
+            echo 'Успешная авторизация';
+            header('Location: ../signin.php');
         }else{
             echo 'Неверный пароль';
         }
@@ -27,4 +29,7 @@ if(!empty($login) && !empty($pwd)){
     echo "Пожалуйста заполните все поля";
 }
 ?>
+<br>
+<a href="../index.php">Главная страница</a>
+<br>
 <a href="../signup.php">Страница регистрации</a>

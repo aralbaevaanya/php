@@ -1,5 +1,6 @@
 <?php
 require_once 'db.php';
+require_once '../parts/head.php';
 
 $titel = htmlentities(trim($_POST['title']));
 $host = htmlentities(trim($_POST['host']));

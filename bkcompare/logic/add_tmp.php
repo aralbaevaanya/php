@@ -1,5 +1,6 @@
 <?php
 require_once 'db.php';
+require_once '../parts/head.php';
 
 $title = trim(($_POST['title']));
 $myHotelName = trim($_POST['myHotel']);

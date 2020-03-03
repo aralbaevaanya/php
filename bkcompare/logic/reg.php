@@ -1,5 +1,6 @@
 <?php
 require_once 'db.php';
+require_once '../parts/head.php';
 
 $login = trim($_POST['login']);
 $pwd = trim($_POST['pwd']);

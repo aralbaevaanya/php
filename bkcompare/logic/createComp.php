@@ -1,3 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <?php require_once '../parts/head.php'; ?>
+    <style type="text/css">
+        TABLE {
+            width: 300px; /* Ширина таблицы */
+            border: 1px solid black; /* Рамка вокруг таблицы */
+            border-bottom: none; /* Убираем линию снизу */
+        }
+
+        TD, TH {
+            padding: 3px; /* Поля вокруг содержимого ячеек */
+        }
+
+        TH {
+            text-align: left; /* Выравнивание по левому краю */
+            background: black; /* Цвет фона */
+            color: white; /* Цвет текста */
+            border: 1px solid white; /* Рамка вокруг ячеек */
+        }
+
+        TD {
+            border-bottom: 1px solid black; /* Линия снизу */
+        }
+    </style>
+</head>
 <?php
 require_once 'db.php';
 require_once 'simple_html_dom.php';
@@ -12,7 +39,6 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $myHotelHost = $stmt->fetch(PDO::FETCH_OBJ);
 $myHotelHost = $myHotelHost->my_hotel_host;
-echo $myHotelHost . '         ';
 
 $sql_my_hotel = 'SELECT name, host FROM hotels WHERE host = :myHost';
 $params_my_hotel = [':myHost' => $myHotelHost];
@@ -55,44 +81,41 @@ $dmax = $averageMaxPrice - $myHotelRes[$myHotel->name][2];
 
 
 ?>
+<body>
+<h1><?php echo $myHotel->name ?></h1>
+<br>
+<h2>Наименьшая цена <?php echo ($dmin > 0) ? 'меньше на ' . $dmin : 'больше на ' . -$dmin ?></h2>
+<br>
+<h2>Средняя цена <?php echo ($dmidle > 0) ? 'меньше на ' . $dmidle : 'больше на ' . -$dmidle ?></h2>
+<br>
+<h2>Наибольшая цена <?php echo ($dmax > 0) ? 'меньше на ' . $dmax : 'больше на ' . -$dmax ?></h2>
+<br>
 
-    <h1><?php echo $myHotel->name ?></h1>
-    <br>
-    <h2>Наименьшая цена <?php echo ($dmin > 0) ? 'меньше на ' . $dmin : 'больше на ' . -$dmin ?></h2>
-    <br>
-    <h2>Средняя цена <?php echo ($dmidle > 0) ? 'меньше на ' . $dmidle : 'больше на ' . -$dmidle ?></h2>
-    <br>
-    <h2>Наибольшая цена <?php echo ($dmax > 0) ? 'меньше на ' . $dmax : 'больше на ' . -$dmax ?></h2>
-    <br>
-
-    <table>
-        <thead>
-        <tr>
-            <td>Название отеля</td>
-            <td>Минимальная цена</td>
-            <td>Средняя цена</td>
-            <td>Максимальная цена</td>
-        </tr>
-        </thead>
-        <tbody>
-        <?php
-        echo "<tr><td>$myHotel->name</td>";
-        foreach ($myHotelRes[$myHotel->name] as $value) {
-            echo "<td>$value</td>";
+<table>
+    <tr>
+        <th>Название отеля</th>
+        <th>Минимальная цена</th>
+        <th>Средняя цена</th>
+        <th>Максимальная цена</th>
+    </tr>
+    <?php
+    echo "<tr><td>$myHotel->name</td>";
+    foreach ($myHotelRes[$myHotel->name] as $value) {
+        echo "<td>$value</td>";
+    }
+    echo '</tr>';
+    foreach ($hotelsRes as $k => $value) {
+        echo '<tr>';
+        echo '<td>' . $k . '</td>';
+        foreach ($value as $v) {
+            echo '<td>' . $v . '</td>';
         }
-        echo '<tr';
-        foreach ($hotelsRes as $k => $value) {
-            echo '<tr>';
-            echo '<td>' . $k . '</td>';
-            foreach ($value as $v) {
-                echo '<td>' . $v . '</td>';
-            }
-            echo '</tr>';
-        }
-        ?>
-        </tbody>
-    </table>'
-
+        echo '</tr>';
+    }
+    ?>
+</table>
+'
+</body>
 
 <?php
 function getInfo($hotel, &$hotelsRes)
@@ -104,11 +127,12 @@ function getInfo($hotel, &$hotelsRes)
     $request = 'https://ru.hotels.com/' . $hotel->host . '/?q-check-out=' . $datecheckout->format('Y-m-d') .
         '&tab=description&q-room-0-adults=2&YGF=14&q-check-in=' . $date .
         '&MGT=1&WOE=6&WOD=5&ZSX=0&SYE=3&q-room-0-children=0';
-    //echo $request;
+    echo $request . '<br>';
 
     $document = file_get_html($request);
 
-    $prises = $document->find('ins.current-price, strong.current-price');
+    $prises = $document->find('ins.current-price');
+    $prises = array_merge($prises, $document->find('strong.current-price'));
     if (empty($prises)) {
         return;
     }
